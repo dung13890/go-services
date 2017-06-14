@@ -1,0 +1,7 @@
+package: github.com/dung13890/go-services/products
+import:
+- package: github.com/gorilla/mux
+  version: ^1.4.0
+- package: gopkg.in/mgo.v2
+  subpackages:
+  - bson

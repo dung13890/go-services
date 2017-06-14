@@ -1,0 +1,43 @@
+version: "2"
+
+services:
+  users:
+    image: golang:1.8
+    restart: on-failure
+    volumes:
+      - ./users:/go/src/github.com/dung13890/go-services/users
+    working_dir: /go/src/github.com/dung13890/go-services/users
+    environment:
+      - GOBIN=/go/bin
+    links:
+      - mongodb
+    tty: true
+  products:
+    image: golang:1.8
+    restart: on-failure
+    volumes:
+      - ./products:/go/src/github.com/dung13890/go-services/products
+    working_dir: /go/src/github.com/dung13890/go-services/products
+    environment:
+      - GOBIN=/go/bin
+    links:
+      - mongodb
+    tty: true
+  caddy:
+    image: abiosoft/caddy
+    restart: always
+    volumes:
+     - ./caddyfile:/srv
+    ports:
+     - "80:80"
+     - "443:443"
+    links:
+      - users
+      - products
+    tty: true
+  mongodb:
+    image: mongo
+    restart: on-failure
+    volumes:
+      - ./mongodb:/data/db
+    tty: true
