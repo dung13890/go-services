@@ -6,6 +6,7 @@ import (
 
 	"github.com/dung13890/go-services/users/common"
 	"github.com/dung13890/go-services/users/models"
+	"github.com/dung13890/go-services/users/repo"
 	"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2"
 )
@@ -23,7 +24,7 @@ func (u *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
 	context := NewContext()
 	defer context.Close()
 	c := context.DbCollection("users")
-	repo := &models.UserRepo{c}
+	repo := &repo.UserRepo{c}
 	users := repo.GetAll()
 	response := &response{
 		Message: "success",
@@ -50,7 +51,7 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	context := NewContext()
 	defer context.Close()
 	c := context.DbCollection("users")
-	repo := &models.UserRepo{c}
+	repo := &repo.UserRepo{c}
 	err = repo.Create(&user)
 	if err != nil {
 		common.ResponseError(w, err, "Invalid User data", 500)
@@ -76,7 +77,7 @@ func (u *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	context := NewContext()
 	defer context.Close()
 	c := context.DbCollection("users")
-	repo := &models.UserRepo{c}
+	repo := &repo.UserRepo{c}
 	err := repo.Delete(id)
 	if err != nil {
 		if err == mgo.ErrNotFound {

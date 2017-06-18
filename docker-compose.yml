@@ -1,6 +1,20 @@
 version: "2"
 
 services:
+  gateway:
+    image: golang:1.8
+    restart: on-failure
+    volumes:
+      - ./gateway:/go/src/github.com/dung13890/go-services/gateway
+    working_dir: /go/src/github.com/dung13890/go-services/gateway
+    environment:
+      - GOBIN=/go/bin
+    ports:
+      - "3000:3000"
+    links:
+      - users
+      - products
+    tty: true
   users:
     image: golang:1.8
     restart: on-failure
@@ -32,8 +46,7 @@ services:
      - "80:80"
      - "443:443"
     links:
-      - users
-      - products
+      - gateway
     tty: true
   mongodb:
     image: mongo

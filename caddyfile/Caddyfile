@@ -1,13 +1,6 @@
-users.go-services.dev:80 {
+go-services.dev:80 {
     tls off
-    proxy /api users:8080 {
-
-    }
-}
-
-products.go-services.dev:80 {
-    tls off
-    proxy /api products:8080 {
+    proxy /api gateway:3000 {
 
     }
 }
