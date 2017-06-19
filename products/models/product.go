@@ -20,6 +20,12 @@ type ProductRepo struct {
 	C *mgo.Collection
 }
 
+func (u *ProductRepo) GetById(id string) (Product, error) {
+	product := Product{}
+	err := u.C.Find(bson.M{"_id": bson.ObjectIdHex(id)}).One(&product)
+	return product, err
+}
+
 func (u *ProductRepo) GetAll() []Product {
 	products := []Product{}
 	iter := u.C.Find(nil).Iter()

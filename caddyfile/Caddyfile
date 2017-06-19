@@ -1,5 +1,5 @@
-go-services.dev:80 {
-    tls off
+go-services.dev:443 {
+    tls self_signed
     proxy /api gateway:3000 {
 
     }

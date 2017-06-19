@@ -4,36 +4,35 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/dung13890/go-services/products/common"
-	"github.com/dung13890/go-services/products/models"
+	"github.com/dung13890/go-services/orders/common"
+	"github.com/dung13890/go-services/orders/models"
 	"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2"
 )
 
 type response struct {
-	Message string           `json:"message,omitempty"`
-	Status  int              `json:"status"`
-	Item    *models.Product  `json:"item,omitempty"`
-	Items   []models.Product `json:"items,omitempty"`
+	Message string        `json:"message,omitempty"`
+	Status  int           `json:"status"`
+	Item    *models.Order `json:"item,omitempty"`
 }
 
-type ProductHandler struct{}
+type OrderHandler struct{}
 
-func (p *ProductHandler) GetById(w http.ResponseWriter, r *http.Request) {
+func (o *OrderHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id := vars["id"]
+	id := vars["user"]
 	context := NewContext()
-	c := context.DbCollection("products")
+	c := context.DbCollection("orders")
 	defer context.Close()
-	repo := &models.ProductRepo{c}
-	product, err := repo.GetById(id)
+	repo := &models.OrderRepo{c}
+	order, err := repo.GetUser(id)
 	if err != nil {
 		common.ResponseError(w, err, "Invalid User data", 500)
 		return
 	}
 	response := &response{
 		Message: "success",
-		Item:    &product,
+		Item:    &order,
 		Status:  http.StatusOK,
 	}
 	rs, err := json.Marshal(response)
@@ -46,39 +45,18 @@ func (p *ProductHandler) GetById(w http.ResponseWriter, r *http.Request) {
 	w.Write(rs)
 }
 
-func (p *ProductHandler) Get(w http.ResponseWriter, r *http.Request) {
-	context := NewContext()
-	defer context.Close()
-	c := context.DbCollection("products")
-	repo := &models.ProductRepo{c}
-	products := repo.GetAll()
-	response := &response{
-		Message: "success",
-		Items:   products,
-		Status:  http.StatusOK,
-	}
-	rs, err := json.Marshal(response)
-	if err != nil {
-		common.ResponseError(w, err, "Invalid Product data", 500)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(rs)
-}
-
-func (p *ProductHandler) Create(w http.ResponseWriter, r *http.Request) {
-	product := models.Product{}
-	err := json.NewDecoder(r.Body).Decode(&product)
+func (o *OrderHandler) Create(w http.ResponseWriter, r *http.Request) {
+	order := models.Order{}
+	err := json.NewDecoder(r.Body).Decode(&order)
 	if err != nil {
 		common.ResponseError(w, err, "Invalid Product data", 500)
 		return
 	}
 	context := NewContext()
 	defer context.Close()
-	c := context.DbCollection("products")
-	repo := &models.ProductRepo{c}
-	err = repo.Create(&product)
+	c := context.DbCollection("orders")
+	repo := &models.OrderRepo{c}
+	err = repo.Create(&order)
 	if err != nil {
 		common.ResponseError(w, err, "Invalid Product data", 500)
 		return
@@ -97,13 +75,13 @@ func (p *ProductHandler) Create(w http.ResponseWriter, r *http.Request) {
 	w.Write(rs)
 }
 
-func (p *ProductHandler) Delete(w http.ResponseWriter, r *http.Request) {
+func (o *OrderHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 	context := NewContext()
 	defer context.Close()
-	c := context.DbCollection("products")
-	repo := &models.ProductRepo{c}
+	c := context.DbCollection("orders")
+	repo := &models.OrderRepo{c}
 	err := repo.Delete(id)
 	if err != nil {
 		if err == mgo.ErrNotFound {

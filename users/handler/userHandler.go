@@ -20,6 +20,33 @@ type response struct {
 
 type UserHandler struct{}
 
+func (u *UserHandler) GetById(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	context := NewContext()
+	c := context.DbCollection("users")
+	defer context.Close()
+	repo := &repo.UserRepo{c}
+	user, err := repo.GetById(id)
+	if err != nil {
+		common.ResponseError(w, err, "Invalid User data", 500)
+		return
+	}
+	response := &response{
+		Message: "success",
+		Item:    &user,
+		Status:  http.StatusOK,
+	}
+	rs, err := json.Marshal(response)
+	if err != nil {
+		common.ResponseError(w, err, "Invalid User data", 500)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(rs)
+}
+
 func (u *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
 	context := NewContext()
 	defer context.Close()

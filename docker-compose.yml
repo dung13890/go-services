@@ -14,6 +14,7 @@ services:
     links:
       - users
       - products
+      - orders
     tty: true
   users:
     image: golang:1.8
@@ -32,6 +33,17 @@ services:
     volumes:
       - ./products:/go/src/github.com/dung13890/go-services/products
     working_dir: /go/src/github.com/dung13890/go-services/products
+    environment:
+      - GOBIN=/go/bin
+    links:
+      - mongodb
+    tty: true
+  orders:
+    image: golang:1.8
+    restart: on-failure
+    volumes:
+      - ./orders:/go/src/github.com/dung13890/go-services/orders
+    working_dir: /go/src/github.com/dung13890/go-services/orders
     environment:
       - GOBIN=/go/bin
     links:

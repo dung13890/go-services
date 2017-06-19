@@ -12,6 +12,12 @@ type UserRepo struct {
 	C *mgo.Collection
 }
 
+func (u *UserRepo) GetById(id string) (models.User, error) {
+	user := models.User{}
+	err := u.C.Find(bson.M{"_id": bson.ObjectIdHex(id)}).One(&user)
+	return user, err
+}
+
 func (u *UserRepo) GetAll() []models.User {
 	users := []models.User{}
 	iter := u.C.Find(nil).Iter()
